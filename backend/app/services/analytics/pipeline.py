@@ -17,9 +17,13 @@ from app.services.analytics.rankings import (
     calculate_customer_metrics,
 )
 from app.services.analytics.anomalies import detect_revenue_anomalies
+from app.services.analytics.currency import detect_currency
 
 
 def process_analytics(df: pd.DataFrame, dataset_id: str) -> AnalyticsResponse:
+    # 0. Detect currency before cleaning converts raw string symbols into floats
+    currency = detect_currency(df)
+
     # 1. Normalize column names
     normalized_df = normalize_columns(df)
 
@@ -58,6 +62,7 @@ def process_analytics(df: pd.DataFrame, dataset_id: str) -> AnalyticsResponse:
         customers=customers,
         anomalies=anomalies,
         data_quality=quality_metrics,
+        currency=currency,
     )
 
 

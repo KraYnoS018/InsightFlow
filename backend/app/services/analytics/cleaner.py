@@ -16,6 +16,7 @@ COLUMN_ALIASES: Dict[str, List[str]] = {
     "country": ["country", "nation"],
     "store_location": ["store_location", "store location", "location", "store", "branch"],
     "category": ["category", "product_category", "department"],
+    "currency": ["currency", "currency_code", "currency code"],
 }
 
 REQUIRED_COLUMNS = ["transaction_date", "invoice_no", "quantity", "total_amount"]
@@ -66,8 +67,9 @@ def clean_numeric_series(series: pd.Series) -> pd.Series:
     if pd.api.types.is_numeric_dtype(series):
         return pd.to_numeric(series, errors="coerce")
     
-    # Remove currency symbols, commas, spaces
-    cleaned = series.astype(str).str.replace(r"[\$,\s]", "", regex=True)
+    # Remove currency symbols ($, ₹, €, £, Rs., Rs), commas, spaces
+    cleaned = series.astype(str).str.replace(r"[\$,₹,€,£,\s]", "", regex=True)
+    cleaned = cleaned.str.replace(r"\bRs\.?\b", "", regex=True, flags=re.IGNORECASE)
     return pd.to_numeric(cleaned, errors="coerce")
 
 

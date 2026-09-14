@@ -80,6 +80,13 @@ class DataQualityMetrics(BaseModel):
     negative_revenue_rows: int
 
 
+class CurrencyMetadata(BaseModel):
+    code: str = "UNKNOWN"
+    symbol: str = ""
+    source: str = "unknown"
+    confidence: str = "low"
+
+
 class AnalyticsResponse(BaseModel):
     dataset_id: str
     summary: SummaryMetrics
@@ -92,3 +99,4 @@ class AnalyticsResponse(BaseModel):
     customers: List[CustomerMetric] = []
     anomalies: List[AnomalyItem]
     data_quality: DataQualityMetrics
+    currency: CurrencyMetadata = CurrencyMetadata()
