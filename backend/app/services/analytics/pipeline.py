@@ -61,7 +61,19 @@ def process_analytics(df: pd.DataFrame, dataset_id: str) -> AnalyticsResponse:
     )
 
 
+SUPPORTED_ENCODINGS = ["utf-8-sig", "utf-8", "cp1252", "latin1"]
+
+
 def process_csv_content(csv_bytes: bytes, dataset_id: str) -> AnalyticsResponse:
-    # Read into single DataFrame
-    df = pd.read_csv(io.BytesIO(csv_bytes), low_memory=False)
+    df = None
+    for enc in SUPPORTED_ENCODINGS:
+        try:
+            df = pd.read_csv(io.BytesIO(csv_bytes), encoding=enc, low_memory=False)
+            break
+        except (UnicodeDecodeError, UnicodeError, LookupError):
+            continue
+
+    if df is None:
+        raise ValidationError("Dataset CSV could not be decoded with any supported encoding.")
+
     return process_analytics(df, dataset_id)

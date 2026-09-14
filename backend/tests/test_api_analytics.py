@@ -137,3 +137,35 @@ def test_get_analytics_success(mock_download, mock_fetch, mock_verify):
     assert data["summary"]["total_orders"] == 2
     assert data["summary"]["total_units"] == 3.0
     assert len(data["categories"]) == 2
+
+
+@patch("app.api.routes.analytics.verify_supabase_token", new_callable=AsyncMock)
+@patch("app.api.routes.analytics.fetch_dataset_metadata", new_callable=AsyncMock)
+@patch("app.api.routes.analytics.download_dataset_csv", new_callable=AsyncMock)
+def test_get_analytics_cp1252_encoding_success(mock_download, mock_fetch, mock_verify):
+    mock_verify.return_value = {"id": "user-123", "email": "user@example.com"}
+    mock_fetch.return_value = {
+        "id": "dataset-123",
+        "user_id": "user-123",
+        "storage_path": "user-123/dataset-123.csv",
+    }
+    # cp1252/Windows-1252 encoded CSV with €, smart quote ’, and accented Café
+    csv_text = (
+        "Order Date,Order ID,Quantity,Sales,Product Name,Category\n"
+        "2024-01-01,CA-1001,2,150.00,Café Chair €50,Furniture\n"
+        "2024-01-02,CA-1002,1,50.00,Customer’s Desk,Furniture\n"
+    )
+    cp1252_csv = csv_text.encode("cp1252")
+    mock_download.return_value = cp1252_csv
+
+    response = client.get(
+        "/api/analytics/dataset-123",
+        headers={"Authorization": "Bearer valid-token"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["dataset_id"] == "dataset-123"
+    assert data["summary"]["total_revenue"] == 200.0
+    assert data["summary"]["total_orders"] == 2
+    assert data["summary"]["total_units"] == 3.0
+
