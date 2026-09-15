@@ -150,8 +150,16 @@ export interface DataQualityMetrics {
   negative_revenue_rows: number
 }
 
+export interface CurrencyMetadata {
+  code: 'INR' | 'USD' | 'EUR' | 'GBP' | 'UNKNOWN'
+  symbol: string
+  source: 'currency_column' | 'currency_symbol' | 'unknown' | 'conflict'
+  confidence: 'high' | 'low'
+}
+
 export interface AnalyticsResponse {
   dataset_id: string
+  currency: CurrencyMetadata
   summary: SummaryMetrics
   growth: GrowthMetrics
   time_series: TimeSeriesPoint[]

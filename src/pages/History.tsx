@@ -1,7 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { History as HistoryIcon, FileText, UploadCloud, RefreshCw, AlertCircle, Calendar, Layers, Columns, BarChart2, CheckCircle2, ChevronDown, ChevronUp, DollarSign, ShoppingBag, Box } from 'lucide-react'
+import {
+  History as HistoryIcon,
+  FileText,
+  UploadCloud,
+  RefreshCw,
+  AlertCircle,
+  Calendar,
+  Layers,
+  Columns,
+  BarChart2,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Coins,
+  ShoppingBag,
+  Box,
+} from 'lucide-react'
 import { GlassCard } from '../components/ui/GlassCard'
 import { GlassButton } from '../components/ui/GlassButton'
 import { GlassBadge } from '../components/ui/GlassBadge'
@@ -10,6 +26,26 @@ import { useAuth } from '../contexts/AuthContext'
 import { formatDate, formatFileSize } from '../lib/utils'
 import { fetchDatasetAnalytics } from '../lib/api'
 import type { Dataset, AnalyticsResponse } from '../types'
+
+const formatCurrency = (
+  value: number | null,
+  currency: AnalyticsResponse['currency']
+): string => {
+  if (value === null) return 'N/A'
+
+  if (currency.code === 'UNKNOWN') {
+    return value.toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    })
+  }
+
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: currency.code,
+    currencyDisplay: 'symbol',
+    maximumFractionDigits: 2,
+  }).format(value)
+}
 
 export const History: React.FC = () => {
   const { user, session } = useAuth()
@@ -53,7 +89,10 @@ export const History: React.FC = () => {
 
   const handleFetchAnalytics = async (datasetId: string) => {
     if (!session?.access_token) {
-      setAnalyticsError((prev) => ({ ...prev, [datasetId]: 'No active authentication session token available.' }))
+      setAnalyticsError((prev) => ({
+        ...prev,
+        [datasetId]: 'No active authentication session token available.',
+      }))
       return
     }
 
@@ -73,7 +112,10 @@ export const History: React.FC = () => {
       const data = await fetchDatasetAnalytics(datasetId, session.access_token)
       setAnalyticsData((prev) => ({ ...prev, [datasetId]: data }))
     } catch (err: any) {
-      setAnalyticsError((prev) => ({ ...prev, [datasetId]: err.message || 'Failed to fetch analytics.' }))
+      setAnalyticsError((prev) => ({
+        ...prev,
+        [datasetId]: err.message || 'Failed to fetch analytics.',
+      }))
     } finally {
       setAnalyticsLoading((prev) => ({ ...prev, [datasetId]: false }))
     }
@@ -92,6 +134,7 @@ export const History: React.FC = () => {
               </span>
             )}
           </h1>
+
           <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
             View all uploaded retail sales datasets and analyze metrics from the backend.
           </p>
@@ -109,7 +152,10 @@ export const History: React.FC = () => {
       {loading ? (
         <div className="flex flex-col gap-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/50 dark:border-white/5 animate-pulse" />
+            <div
+              key={i}
+              className="h-20 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/50 dark:border-white/5 animate-pulse"
+            />
           ))}
         </div>
       ) : error ? (
@@ -118,7 +164,9 @@ export const History: React.FC = () => {
           <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-500/20">
             <AlertCircle className="w-6 h-6" />
           </div>
+
           <p className="text-sm text-slate-600 dark:text-slate-300">{error}</p>
+
           <GlassButton variant="secondary" size="sm" onClick={fetchHistory}>
             <RefreshCw className="w-4 h-4" />
             <span>Retry</span>
@@ -130,12 +178,17 @@ export const History: React.FC = () => {
           <div className="w-16 h-16 rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-500/20">
             <HistoryIcon className="w-8 h-8" />
           </div>
+
           <div className="flex flex-col gap-1">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">No datasets yet</h3>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              No datasets yet
+            </h3>
+
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">
               You haven't uploaded any sales CSV files to InsightFlow.
             </p>
           </div>
+
           <Link to="/upload">
             <GlassButton variant="primary">
               <UploadCloud className="w-4 h-4" />
@@ -170,15 +223,18 @@ export const History: React.FC = () => {
                         <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                           {dataset.file_name}
                         </h4>
+
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1">
                             <Layers className="w-3.5 h-3.5 text-slate-400" />
                             {dataset.row_count.toLocaleString()} rows
                           </span>
+
                           <span className="flex items-center gap-1">
                             <Columns className="w-3.5 h-3.5 text-slate-400" />
                             {dataset.column_count} columns
                           </span>
+
                           <span>{formatFileSize(dataset.file_size)}</span>
                         </div>
                       </div>
@@ -201,8 +257,18 @@ export const History: React.FC = () => {
                         isLoading={isFetching}
                       >
                         <BarChart2 className="w-4 h-4" />
-                        <span>{result ? (isSelected ? 'Hide Analytics' : 'View Analytics') : 'Fetch Analytics'}</span>
-                        {isSelected ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        <span>
+                          {result
+                            ? isSelected
+                              ? 'Hide Analytics'
+                              : 'View Analytics'
+                            : 'Fetch Analytics'}
+                        </span>
+                        {isSelected ? (
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        ) : (
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        )}
                       </GlassButton>
                     </div>
                   </div>
@@ -229,7 +295,12 @@ export const History: React.FC = () => {
                               <AlertCircle className="w-4 h-4 shrink-0" />
                               <span>{fetchError}</span>
                             </div>
-                            <GlassButton variant="outline" size="sm" onClick={() => handleFetchAnalytics(dataset.id)}>
+
+                            <GlassButton
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleFetchAnalytics(dataset.id)}
+                            >
                               Retry
                             </GlassButton>
                           </div>
@@ -240,6 +311,7 @@ export const History: React.FC = () => {
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                                 Analytics JSON Payload Received
                               </span>
+
                               <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                                 Dataset ID: {result.dataset_id}
                               </span>
@@ -249,10 +321,14 @@ export const History: React.FC = () => {
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                               <div className="p-3 bg-white/60 dark:bg-slate-900/60 rounded-lg border border-slate-200/50 dark:border-white/5 flex flex-col gap-1">
                                 <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                  <DollarSign className="w-3 h-3 text-emerald-500" /> Revenue
+                                  <Coins className="w-3 h-3 text-emerald-500" /> Revenue
                                 </span>
+
                                 <span className="text-base font-bold text-slate-900 dark:text-slate-100">
-                                  ${result.summary.total_revenue.toLocaleString()}
+                                  {formatCurrency(
+                                    result.summary.total_revenue,
+                                    result.currency
+                                  )}
                                 </span>
                               </div>
 
@@ -260,6 +336,7 @@ export const History: React.FC = () => {
                                 <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
                                   <ShoppingBag className="w-3 h-3 text-sky-500" /> Orders
                                 </span>
+
                                 <span className="text-base font-bold text-slate-900 dark:text-slate-100">
                                   {result.summary.total_orders.toLocaleString()}
                                 </span>
@@ -269,15 +346,22 @@ export const History: React.FC = () => {
                                 <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
                                   <Box className="w-3 h-3 text-indigo-500" /> Units Sold
                                 </span>
+
                                 <span className="text-base font-bold text-slate-900 dark:text-slate-100">
                                   {result.summary.total_units.toLocaleString()}
                                 </span>
                               </div>
 
                               <div className="p-3 bg-white/60 dark:bg-slate-900/60 rounded-lg border border-slate-200/50 dark:border-white/5 flex flex-col gap-1">
-                                <span className="text-[11px] text-slate-500 dark:text-slate-400">Avg Order Value</span>
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                                  Avg Order Value
+                                </span>
+
                                 <span className="text-base font-bold text-slate-900 dark:text-slate-100">
-                                  {result.summary.average_order_value !== null ? `$${result.summary.average_order_value}` : 'N/A'}
+                                  {formatCurrency(
+                                    result.summary.average_order_value,
+                                    result.currency
+                                  )}
                                 </span>
                               </div>
                             </div>
@@ -285,10 +369,22 @@ export const History: React.FC = () => {
                             {/* Data Quality & Categories Pill Info */}
                             <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200/40 dark:border-white/5">
                               <span>
-                                Valid rows: <strong className="text-emerald-600 dark:text-emerald-400">{result.data_quality.valid_rows}</strong> / {result.data_quality.total_rows}
+                                Valid rows:{' '}
+                                <strong className="text-emerald-600 dark:text-emerald-400">
+                                  {result.data_quality.valid_rows}
+                                </strong>{' '}
+                                / {result.data_quality.total_rows}
                               </span>
-                              <span>Categories detected: <strong>{result.categories.length}</strong></span>
-                              <span>Anomalies detected: <strong>{result.anomalies.length}</strong></span>
+
+                              <span>
+                                Categories detected:{' '}
+                                <strong>{result.categories.length}</strong>
+                              </span>
+
+                              <span>
+                                Anomalies detected:{' '}
+                                <strong>{result.anomalies.length}</strong>
+                              </span>
                             </div>
                           </div>
                         ) : null}
@@ -304,4 +400,3 @@ export const History: React.FC = () => {
     </div>
   )
 }
-

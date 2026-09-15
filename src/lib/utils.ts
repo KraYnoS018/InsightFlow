@@ -23,3 +23,35 @@ export function formatDate(dateString: string): string {
     minute: '2-digit',
   }).format(date)
 }
+
+export function formatNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined) return 'N/A'
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value)
+}
+
+export function formatCurrency(
+  value: number | null | undefined,
+  currency?: { code?: string; symbol?: string } | null
+): string {
+  if (value === null || value === undefined) return 'N/A'
+
+  const code = currency?.code || 'UNKNOWN'
+
+  if (code === 'UNKNOWN') {
+    const symbol = currency?.symbol || '$'
+    return `${symbol}${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+  }
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: code,
+      currencyDisplay: 'symbol',
+      maximumFractionDigits: 2,
+    }).format(value)
+  } catch {
+    const symbol = currency?.symbol || '$'
+    return `${symbol}${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+  }
+}
+
