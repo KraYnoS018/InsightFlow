@@ -62,7 +62,7 @@ def test_currency_symbol_usd():
     assert res.confidence == "high"
 
 
-def test_currency_unknown_plain_numerics():
+def test_currency_country_inference():
     df = pd.DataFrame({
         "transaction_date": ["2024-01-01"],
         "invoice_no": ["INV1"],
@@ -71,11 +71,13 @@ def test_currency_unknown_plain_numerics():
         "country": ["United States"],
         "store_location": ["New York"],
     })
+
     res = detect_currency(df)
-    assert res.code == "UNKNOWN"
-    assert res.symbol == ""
-    assert res.source == "unknown"
-    assert res.confidence == "low"
+
+    assert res.code == "USD"
+    assert res.symbol == "$"
+    assert res.source == "country_inference"
+    assert res.confidence == "medium"
 
 
 def test_currency_conflicting_column_values():
