@@ -20,12 +20,49 @@ interface TimeSeriesChartProps {
 
 type MetricType = 'revenue' | 'orders' | 'units'
 
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: any[]
+  label?: string
+  currency: CurrencyMetadata
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label, currency }) => {
+  if (active && payload && payload.length) {
+    const point: TimeSeriesPoint = payload[0].payload
+    return (
+      <div className="bg-slate-900/95 dark:bg-[#0b0f19]/95 border border-slate-700/80 p-3 rounded-lg shadow-xl text-xs flex flex-col gap-1.5 text-slate-100 min-w-[160px]">
+        <span className="font-bold text-blue-400 text-xs border-b border-slate-800 pb-1">{label}</span>
+        <div className="flex items-center justify-between gap-4 pt-0.5">
+          <span className="text-slate-400 flex items-center gap-1">
+            <Coins className="w-3 h-3 text-emerald-400" /> Revenue
+          </span>
+          <span className="font-bold text-emerald-400">{formatCurrency(point.revenue, currency)}</span>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-slate-400 flex items-center gap-1">
+            <ShoppingBag className="w-3 h-3 text-blue-400" /> Orders
+          </span>
+          <span className="font-bold text-blue-300">{formatNumber(point.orders)}</span>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-slate-400 flex items-center gap-1">
+            <Package className="w-3 h-3 text-purple-400" /> Units
+          </span>
+          <span className="font-bold text-purple-300">{formatNumber(point.units)}</span>
+        </div>
+      </div>
+    )
+  }
+  return null
+}
+
 export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ data, currency }) => {
   const [metric, setMetric] = useState<MetricType>('revenue')
 
   if (!data || data.length === 0) {
     return (
-      <GlassCard className="p-8 text-center text-slate-500 dark:text-slate-400">
+      <GlassCard className="p-8 text-center text-slate-500 dark:text-slate-400 text-xs font-medium">
         No time-series trends available for this dataset.
       </GlassCard>
     )
@@ -33,20 +70,20 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ data, currency
 
   const metricConfig = {
     revenue: {
-      label: 'Revenue Trend',
-      stroke: '#0284c7', // sky-600
+      label: 'Revenue',
+      stroke: '#2563eb', // blue-600
       fill: 'url(#revenueGradient)',
       formatter: (val: number) => formatCurrency(val, currency),
     },
     orders: {
-      label: 'Order Volume',
-      stroke: '#6366f1', // indigo-500
+      label: 'Orders',
+      stroke: '#4f46e5', // indigo-600
       fill: 'url(#ordersGradient)',
       formatter: (val: number) => `${formatNumber(val)} orders`,
     },
     units: {
       label: 'Units Sold',
-      stroke: '#a855f7', // purple-500
+      stroke: '#9333ea', // purple-600
       fill: 'url(#unitsGradient)',
       formatter: (val: number) => `${formatNumber(val)} units`,
     },
@@ -54,42 +91,12 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ data, currency
 
   const currentConfig = metricConfig[metric]
 
-  // Custom glass tooltip for Recharts
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const point: TimeSeriesPoint = payload[0].payload
-      return (
-        <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 p-3 rounded-xl shadow-2xl text-xs flex flex-col gap-1.5 text-slate-100 min-w-[150px]">
-          <span className="font-bold text-sky-400 text-sm">{label}</span>
-          <div className="flex items-center justify-between gap-4 pt-1 border-t border-white/10">
-            <span className="text-slate-400 flex items-center gap-1">
-              <Coins className="w-3 h-3 text-emerald-400" /> Revenue
-            </span>
-            <span className="font-semibold text-emerald-400">{formatCurrency(point.revenue, currency)}</span>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-slate-400 flex items-center gap-1">
-              <ShoppingBag className="w-3 h-3 text-sky-400" /> Orders
-            </span>
-            <span className="font-semibold text-sky-300">{formatNumber(point.orders)}</span>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-slate-400 flex items-center gap-1">
-              <Package className="w-3 h-3 text-purple-400" /> Units
-            </span>
-            <span className="font-semibold text-purple-300">{formatNumber(point.units)}</span>
-          </div>
-        </div>
-      )
-    }
-    return null
-  }
 
   return (
-    <GlassCard className="p-6 flex flex-col gap-6">
+    <GlassCard className="p-5 md:p-6 flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center border border-sky-500/20">
+          <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/60">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
@@ -102,19 +109,19 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ data, currency
           </div>
         </div>
 
-        {/* Metric Selector Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-slate-200/50 dark:bg-slate-900/60 backdrop-blur-md rounded-xl border border-slate-300/40 dark:border-white/10 self-start sm:self-auto">
+        {/* Metric Selector Tabs (TailGrids style tab pill) */}
+        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-lg border border-slate-200 dark:border-slate-700/60 self-start sm:self-auto">
           {(['revenue', 'orders', 'units'] as MetricType[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setMetric(tab)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all duration-200 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold capitalize transition-all duration-150 ${
                 metric === tab
-                  ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm border border-slate-200 dark:border-slate-700'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              {tab}
+              {tab === 'revenue' ? 'Revenue' : tab === 'orders' ? 'Orders' : 'Units'}
             </button>
           ))}
         </div>
@@ -126,16 +133,16 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ data, currency
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0284c7" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#2563eb" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="ordersGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="unitsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#a855f7" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#a855f7" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#9333ea" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#9333ea" stopOpacity={0.0} />
               </linearGradient>
             </defs>
 
@@ -167,13 +174,13 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ data, currency
               dx={-5}
             />
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip currency={currency} />} />
 
             <Area
               type="monotone"
               dataKey={metric}
               stroke={currentConfig.stroke}
-              strokeWidth={3}
+              strokeWidth={2.5}
               fillOpacity={1}
               fill={currentConfig.fill}
             />
@@ -183,3 +190,4 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ data, currency
     </GlassCard>
   )
 }
+

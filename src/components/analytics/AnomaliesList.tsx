@@ -13,9 +13,9 @@ interface AnomaliesListProps {
 export const AnomaliesList: React.FC<AnomaliesListProps> = ({ anomalies, currency }) => {
   if (!anomalies || anomalies.length === 0) {
     return (
-      <GlassCard className="p-6 flex items-center justify-between gap-4">
+      <GlassCard className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
+          <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-900/60">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
@@ -45,10 +45,10 @@ export const AnomaliesList: React.FC<AnomaliesListProps> = ({ anomalies, currenc
   }
 
   return (
-    <GlassCard className="p-6 flex flex-col gap-5">
+    <GlassCard className="p-5 md:p-6 flex flex-col gap-5">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-500/20">
+          <div className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-200 dark:border-rose-900/60">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
@@ -69,21 +69,21 @@ export const AnomaliesList: React.FC<AnomaliesListProps> = ({ anomalies, currenc
         {anomalies.map((item, idx) => (
           <div
             key={idx}
-            className="p-4 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-white/10 flex flex-col justify-between gap-3 shadow-sm hover:border-rose-500/30 transition-all"
+            className="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between gap-3"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   {item.period} • {item.metric}
                 </span>
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mt-0.5">
+                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5">
                   {item.reason}
                 </h4>
               </div>
               {getSeverityBadge(item.severity)}
             </div>
 
-            <div className="flex items-center gap-4 text-xs pt-2 border-t border-slate-200/50 dark:border-white/5">
+            <div className="flex items-center gap-6 text-xs pt-2 border-t border-slate-200 dark:border-slate-800">
               <div>
                 <span className="text-slate-400 block text-[10px]">Observed Value</span>
                 <span className="font-extrabold text-rose-600 dark:text-rose-400">
@@ -107,3 +107,4 @@ export const AnomaliesList: React.FC<AnomaliesListProps> = ({ anomalies, currenc
     </GlassCard>
   )
 }
+

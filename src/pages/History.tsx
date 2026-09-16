@@ -122,31 +122,33 @@ export const History: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 py-4">
+    <div className="flex flex-col gap-6 py-2">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-3">
-            <span>Upload History</span>
-            {datasets.length > 0 && (
-              <span className="text-xs font-semibold bg-sky-500/10 text-sky-600 dark:text-sky-400 px-2.5 py-0.5 rounded-full border border-sky-500/20">
-                {datasets.length}
-              </span>
-            )}
-          </h1>
+      <GlassCard className="p-5 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-2.5">
+              <span>Upload History</span>
+              {datasets.length > 0 && (
+                <span className="text-xs font-semibold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">
+                  {datasets.length} files
+                </span>
+              )}
+            </h1>
 
-          <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
-            View all uploaded retail sales datasets and analyze metrics from the backend.
-          </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              View all uploaded retail sales datasets and inspect analytical summaries directly from the backend API.
+            </p>
+          </div>
+
+          <Link to="/upload" className="self-start sm:self-auto">
+            <GlassButton variant="primary" size="sm">
+              <UploadCloud className="w-4 h-4" />
+              <span>Upload CSV</span>
+            </GlassButton>
+          </Link>
         </div>
-
-        <Link to="/upload">
-          <GlassButton variant="primary" size="sm">
-            <UploadCloud className="w-4 h-4" />
-            <span className="hidden sm:inline">Upload CSV</span>
-          </GlassButton>
-        </Link>
-      </div>
+      </GlassCard>
 
       {/* Loading State */}
       {loading ? (
@@ -154,18 +156,18 @@ export const History: React.FC = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-20 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/50 dark:border-white/5 animate-pulse"
+              className="h-20 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse"
             />
           ))}
         </div>
       ) : error ? (
         /* Error State */
         <GlassCard className="p-8 flex flex-col items-center text-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-500/20">
-            <AlertCircle className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-200 dark:border-rose-900">
+            <AlertCircle className="w-5 h-5" />
           </div>
 
-          <p className="text-sm text-slate-600 dark:text-slate-300">{error}</p>
+          <p className="text-xs font-medium text-slate-600 dark:text-slate-300">{error}</p>
 
           <GlassButton variant="secondary" size="sm" onClick={fetchHistory}>
             <RefreshCw className="w-4 h-4" />
@@ -174,23 +176,23 @@ export const History: React.FC = () => {
         </GlassCard>
       ) : datasets.length === 0 ? (
         /* Empty State */
-        <GlassCard className="p-12 flex flex-col items-center text-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-500/20">
-            <HistoryIcon className="w-8 h-8" />
+        <GlassCard className="p-10 flex flex-col items-center text-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/60">
+            <HistoryIcon className="w-6 h-6" />
           </div>
 
           <div className="flex flex-col gap-1">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
               No datasets yet
             </h3>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">
-              You haven't uploaded any sales CSV files to InsightFlow.
+              You haven't uploaded any sales CSV files to InsightFlow yet.
             </p>
           </div>
 
           <Link to="/upload">
-            <GlassButton variant="primary">
+            <GlassButton variant="primary" size="sm">
               <UploadCloud className="w-4 h-4" />
               <span>Upload your first CSV</span>
             </GlassButton>
@@ -208,14 +210,14 @@ export const History: React.FC = () => {
             return (
               <motion.div
                 key={dataset.id || index}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.03 }}
               >
-                <GlassCard interactive className="p-5 flex flex-col gap-4">
+                <GlassCard className="p-4 md:p-5 flex flex-col gap-4">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-sky-500/15 to-indigo-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-500/20">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-900/60">
                         <FileText className="w-5 h-5" />
                       </div>
 
@@ -224,24 +226,24 @@ export const History: React.FC = () => {
                           {dataset.file_name}
                         </h4>
 
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-slate-500 dark:text-slate-400">
-                          <span className="flex items-center gap-1">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                          <span className="flex items-center gap-1 font-mono">
                             <Layers className="w-3.5 h-3.5 text-slate-400" />
                             {dataset.row_count.toLocaleString()} rows
                           </span>
 
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 font-mono">
                             <Columns className="w-3.5 h-3.5 text-slate-400" />
                             {dataset.column_count} columns
                           </span>
 
-                          <span>{formatFileSize(dataset.file_size)}</span>
+                          <span className="font-mono">{formatFileSize(dataset.file_size)}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-200/50 dark:border-white/5">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-mono">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
                         <span>{formatDate(dataset.created_at)}</span>
                       </div>
@@ -256,11 +258,11 @@ export const History: React.FC = () => {
                         onClick={() => handleFetchAnalytics(dataset.id)}
                         isLoading={isFetching}
                       >
-                        <BarChart2 className="w-4 h-4" />
+                        <BarChart2 className="w-3.5 h-3.5" />
                         <span>
                           {result
                             ? isSelected
-                              ? 'Hide Analytics'
+                              ? 'Hide Details'
                               : 'View Analytics'
                             : 'Fetch Analytics'}
                         </span>
@@ -280,17 +282,17 @@ export const History: React.FC = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="pt-4 border-t border-slate-200/60 dark:border-white/10 flex flex-col gap-4 overflow-hidden"
+                        className="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-3 overflow-hidden"
                       >
                         {isFetching ? (
-                          <div className="flex items-center justify-center p-6 bg-sky-500/5 rounded-xl border border-sky-500/10">
-                            <div className="flex items-center gap-3 text-xs font-semibold text-sky-600 dark:text-sky-400">
+                          <div className="flex items-center justify-center p-5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+                            <div className="flex items-center gap-2.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
                               <RefreshCw className="w-4 h-4 animate-spin" />
                               <span>Requesting dataset analytics from FastAPI backend...</span>
                             </div>
                           </div>
                         ) : fetchError ? (
-                          <div className="flex items-center justify-between p-4 bg-rose-500/10 rounded-xl border border-rose-500/20 text-xs text-rose-600 dark:text-rose-400">
+                          <div className="flex items-center justify-between p-3.5 bg-rose-50 dark:bg-rose-950/40 rounded-lg border border-rose-200 dark:border-rose-900/60 text-xs text-rose-700 dark:text-rose-400">
                             <div className="flex items-center gap-2">
                               <AlertCircle className="w-4 h-4 shrink-0" />
                               <span>{fetchError}</span>
@@ -305,26 +307,26 @@ export const History: React.FC = () => {
                             </GlassButton>
                           </div>
                         ) : result ? (
-                          <div className="flex flex-col gap-4 bg-slate-900/5 dark:bg-white/5 p-4 rounded-xl border border-slate-200/50 dark:border-white/10">
+                          <div className="flex flex-col gap-3 bg-slate-50 dark:bg-slate-900/80 p-4 rounded-lg border border-slate-200/80 dark:border-slate-800">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                Analytics JSON Payload Received
+                                Analytics Payload Received
                               </span>
 
-                              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                              <span className="text-[11px] text-slate-400 font-mono">
                                 Dataset ID: {result.dataset_id}
                               </span>
                             </div>
 
                             {/* Summary Cards Grid */}
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                              <div className="p-3 bg-white/60 dark:bg-slate-900/60 rounded-lg border border-slate-200/50 dark:border-white/5 flex flex-col gap-1">
-                                <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                              <div className="p-3 bg-white dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-0.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                                   <Coins className="w-3 h-3 text-emerald-500" /> Revenue
                                 </span>
 
-                                <span className="text-base font-bold text-slate-900 dark:text-slate-100">
+                                <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100">
                                   {formatCurrency(
                                     result.summary.total_revenue,
                                     result.currency
@@ -332,32 +334,32 @@ export const History: React.FC = () => {
                                 </span>
                               </div>
 
-                              <div className="p-3 bg-white/60 dark:bg-slate-900/60 rounded-lg border border-slate-200/50 dark:border-white/5 flex flex-col gap-1">
-                                <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                  <ShoppingBag className="w-3 h-3 text-sky-500" /> Orders
+                              <div className="p-3 bg-white dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-0.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                                  <ShoppingBag className="w-3 h-3 text-blue-500" /> Orders
                                 </span>
 
-                                <span className="text-base font-bold text-slate-900 dark:text-slate-100">
+                                <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100 font-mono">
                                   {result.summary.total_orders.toLocaleString()}
                                 </span>
                               </div>
 
-                              <div className="p-3 bg-white/60 dark:bg-slate-900/60 rounded-lg border border-slate-200/50 dark:border-white/5 flex flex-col gap-1">
-                                <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                              <div className="p-3 bg-white dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-0.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                                   <Box className="w-3 h-3 text-indigo-500" /> Units Sold
                                 </span>
 
-                                <span className="text-base font-bold text-slate-900 dark:text-slate-100">
+                                <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100 font-mono">
                                   {result.summary.total_units.toLocaleString()}
                                 </span>
                               </div>
 
-                              <div className="p-3 bg-white/60 dark:bg-slate-900/60 rounded-lg border border-slate-200/50 dark:border-white/5 flex flex-col gap-1">
-                                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                              <div className="p-3 bg-white dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-0.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                   Avg Order Value
                                 </span>
 
-                                <span className="text-base font-bold text-slate-900 dark:text-slate-100">
+                                <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100">
                                   {formatCurrency(
                                     result.summary.average_order_value,
                                     result.currency
@@ -367,7 +369,7 @@ export const History: React.FC = () => {
                             </div>
 
                             {/* Data Quality & Categories Pill Info */}
-                            <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200/40 dark:border-white/5">
+                            <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-slate-800 font-mono">
                               <span>
                                 Valid rows:{' '}
                                 <strong className="text-emerald-600 dark:text-emerald-400">

@@ -34,11 +34,11 @@ export const GlassInput = React.forwardRef<HTMLInputElement, GlassInputProps>(
             ref={ref}
             type={inputType}
             className={cn(
-              'w-full rounded-xl px-4 py-2.5 text-sm transition-all duration-200',
-              'bg-slate-100/80 dark:bg-slate-950/60 backdrop-blur-md',
+              'w-full rounded-lg px-3.5 py-2 text-sm transition-all duration-150',
+              'bg-white dark:bg-[#0b0f19]',
               'text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500',
-              'border border-slate-200 dark:border-white/10',
-              'focus:outline-none focus:border-sky-500 dark:focus:border-sky-400 focus:ring-2 focus:ring-sky-500/20',
+              'border border-slate-200 dark:border-slate-800',
+              'focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
               icon && 'pl-10',
               isPassword && 'pr-10',
               error && 'border-rose-500 dark:border-rose-500 focus:border-rose-500 focus:ring-rose-500/20',
@@ -50,7 +50,7 @@ export const GlassInput = React.forwardRef<HTMLInputElement, GlassInputProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
+              className="absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
               tabIndex={-1}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -69,3 +69,4 @@ export const GlassInput = React.forwardRef<HTMLInputElement, GlassInputProps>(
 )
 
 GlassInput.displayName = 'GlassInput'
+

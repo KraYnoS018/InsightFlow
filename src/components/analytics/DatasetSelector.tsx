@@ -1,5 +1,5 @@
 import React from 'react'
-import { Database, FileSpreadsheet, ChevronDown, AlertCircle } from 'lucide-react'
+import { Database, FileSpreadsheet, ChevronDown, AlertCircle, CheckCircle2 } from 'lucide-react'
 import type { Dataset } from '../../types'
 import { GlassCard } from '../ui/GlassCard'
 import { GlassBadge } from '../ui/GlassBadge'
@@ -22,47 +22,53 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
 
   if (datasets.length === 0 && !loading) {
     return (
-      <GlassCard className="p-6 text-center flex flex-col items-center justify-center gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
-          <AlertCircle className="w-6 h-6" />
+      <GlassCard className="p-5 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20">
+            <AlertCircle className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">No Datasets Found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Upload a retail sales CSV file to populate the analytics dashboard.
+            </p>
+          </div>
         </div>
-        <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">No Datasets Found</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md">
-          Please upload a retail sales CSV file first to populate the analytics dashboard.
-        </p>
       </GlassCard>
     )
   }
 
   return (
-    <GlassCard className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <GlassCard className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500/20 to-indigo-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-500/30">
+        <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/60">
           <Database className="w-5 h-5" />
         </div>
         <div className="flex flex-col">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Active Dataset
-          </span>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            {selectedDataset ? selectedDataset.file_name : 'Select a Dataset'}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Active Dataset
+            </span>
             {selectedDataset && (
-              <GlassBadge variant="success">
-                Ready
+              <GlassBadge variant="success" className="gap-1 py-0 text-[10px]">
+                <CheckCircle2 className="w-3 h-3" /> Ready
               </GlassBadge>
             )}
+          </div>
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            {selectedDataset ? selectedDataset.file_name : 'Select a Dataset'}
           </h2>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         {/* Dropdown Select */}
-        <div className="relative min-w-[220px]">
+        <div className="relative min-w-[240px]">
           <select
             value={selectedDatasetId || ''}
             onChange={(e) => onSelectDataset(e.target.value)}
             disabled={loading || datasets.length === 0}
-            className="w-full appearance-none bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/80 dark:border-white/10 rounded-xl px-4 py-2.5 pr-10 text-xs font-semibold text-slate-800 dark:text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500/50 cursor-pointer disabled:opacity-50"
+            className="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 pr-9 text-xs font-semibold text-slate-800 dark:text-slate-200 shadow-xs focus:outline-none focus:border-blue-600 cursor-pointer disabled:opacity-50"
           >
             {datasets.map((dataset) => (
               <option key={dataset.id} value={dataset.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
@@ -74,18 +80,19 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({
         </div>
 
         {selectedDataset && (
-          <div className="hidden lg:flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 pl-3 border-l border-slate-200 dark:border-slate-800">
-            <span className="flex items-center gap-1">
-              <FileSpreadsheet className="w-3.5 h-3.5 text-sky-500" />
+          <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 pl-3 border-l border-slate-200 dark:border-slate-800">
+            <span className="flex items-center gap-1 font-mono">
+              <FileSpreadsheet className="w-3.5 h-3.5 text-blue-500" />
               {formatFileSize(selectedDataset.file_size)}
             </span>
             <span>•</span>
-            <span>{selectedDataset.row_count.toLocaleString()} rows</span>
+            <span className="font-mono">{selectedDataset.row_count.toLocaleString()} rows</span>
             <span>•</span>
-            <span>{selectedDataset.column_count} cols</span>
+            <span className="font-mono">{selectedDataset.column_count} cols</span>
           </div>
         )}
       </div>
     </GlassCard>
   )
 }
+
