@@ -32,8 +32,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   ]
 
   const otherNavItems = [
-    { name: 'Reports', path: '/dashboard#reports', icon: FileText, badge: 'Auto' },
-    { name: 'Settings', path: '/dashboard#settings', icon: SettingsIcon },
+    { name: 'Reports', path: '/reports', icon: FileText, badge: 'Auto' },
+    { name: 'Settings', path: '/settings', icon: SettingsIcon },
   ]
 
   const handleLogout = async () => {
@@ -110,16 +110,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 key={item.name}
                 to={item.path}
                 onClick={onClose}
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
+                    isActive
+                      ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-950/50'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                  )
+                }
               >
-                <div className="flex items-center gap-3">
-                  <item.icon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                  <span>{item.name}</span>
-                </div>
-                {item.badge && (
-                  <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md">
-                    {item.badge}
-                  </span>
+                {({ isActive }) => (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <item.icon className={cn('w-4 h-4', isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500')} />
+                      <span>{item.name}</span>
+                    </div>
+                    {item.badge && (
+                      <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md">
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
                 )}
               </NavLink>
             ))}
@@ -176,7 +187,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Desktop Fixed Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 fixed left-0 top-0 bottom-0 z-30">
+      <aside className="hidden md:flex flex-col w-64 fixed left-0 top-0 bottom-0 z-30 no-print">
         {sidebarContent}
       </aside>
 
@@ -189,14 +200,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onClose}
-              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden"
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden no-print"
             />
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="fixed inset-y-0 left-0 w-72 z-50 md:hidden"
+              className="fixed inset-y-0 left-0 w-72 z-50 md:hidden no-print"
             >
               {sidebarContent}
             </motion.aside>

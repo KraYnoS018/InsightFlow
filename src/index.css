@@ -107,3 +107,28 @@
   background: rgba(148, 163, 184, 0.5);
 }
 
+@media print {
+  @page {
+    margin: 12mm;
+    size: auto;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    overflow: visible !important;
+  }
+
+  .no-print,
+  aside,
+  header,
+  nav,
+  button:not(.print-allow) {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
+

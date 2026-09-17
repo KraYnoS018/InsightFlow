@@ -59,7 +59,7 @@ export const History: React.FC = () => {
   const [analyticsLoading, setAnalyticsLoading] = useState<Record<string, boolean>>({})
   const [analyticsError, setAnalyticsError] = useState<Record<string, string | null>>({})
 
-  const fetchHistory = async () => {
+  const fetchHistory = React.useCallback(async () => {
     if (!user) return
 
     setLoading(true)
@@ -81,11 +81,19 @@ export const History: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   useEffect(() => {
-    fetchHistory()
-  }, [user])
+    let isMounted = true
+    if (user) {
+      void (async () => {
+        if (isMounted) await fetchHistory()
+      })()
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [user, fetchHistory])
 
   const handleFetchAnalytics = async (datasetId: string) => {
     if (!session?.access_token) {
