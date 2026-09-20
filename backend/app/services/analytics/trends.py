@@ -10,27 +10,77 @@ def calculate_time_series_and_growth(
         return [], GrowthMetrics(revenue=None, orders=None, units=None)
 
     valid_dates_df = df.dropna(subset=["transaction_date"]).copy()
+
     if valid_dates_df.empty:
         return [], GrowthMetrics(revenue=None, orders=None, units=None)
 
     # Ensure transaction_date is datetime
-    if not pd.api.types.is_datetime64_any_dtype(valid_dates_df["transaction_date"]):
+    if not pd.api.types.is_datetime64_any_dtype(
+        valid_dates_df["transaction_date"]
+    ):
         valid_dates_df["transaction_date"] = pd.to_datetime(
-            valid_dates_df["transaction_date"], errors="coerce"
+            valid_dates_df["transaction_date"],
+            errors="coerce",
         )
-        valid_dates_df = valid_dates_df.dropna(subset=["transaction_date"])
+        valid_dates_df = valid_dates_df.dropna(
+            subset=["transaction_date"]
+        )
 
     if valid_dates_df.empty:
         return [], GrowthMetrics(revenue=None, orders=None, units=None)
 
     # Group by Year-Month (e.g. "2023-01")
-    valid_dates_df["period"] = valid_dates_df["transaction_date"].dt.to_period("M").astype(str)
+    valid_dates_df["period"] = (
+        valid_dates_df["transaction_date"]
+        .dt.to_period("M")
+        .astype(str)
+    )
 
-    monthly_grouped = valid_dates_df.groupby("period").agg(
-        revenue=("total_amount", "sum"),
-        orders=("invoice_no", "nunique"),
-        units=("quantity", "sum"),
-    ).reset_index()
+    # Order count:
+    # - If invoice/order ID exists, count distinct IDs.
+    # - Otherwise, count records/transactions.
+    if "invoice_no" in valid_dates_df.columns:
+        valid_invoices = (
+            valid_dates_df["invoice_no"]
+            .dropna()
+            .astype(str)
+            .str.strip()
+        )
+
+        valid_invoices = valid_invoices[
+            ~valid_invoices.isin(["", "nan", "none"])
+        ]
+
+        if not valid_invoices.empty:
+            order_counts = (
+                valid_dates_df.assign(
+                    _valid_invoice=valid_dates_df["invoice_no"]
+                    .astype(str)
+                    .str.strip()
+                )
+                .groupby("period")["_valid_invoice"]
+                .nunique()
+            )
+        else:
+            order_counts = valid_dates_df.groupby("period").size()
+    else:
+        order_counts = valid_dates_df.groupby("period").size()
+
+    monthly_grouped = (
+        valid_dates_df.groupby("period")
+        .agg(
+            revenue=("total_amount", "sum"),
+            units=("quantity", "sum"),
+        )
+        .reset_index()
+    )
+
+    monthly_grouped["orders"] = (
+        monthly_grouped["period"]
+        .map(order_counts)
+        .fillna(0)
+        .astype(int)
+    )
 
     # Sort chronologically
     monthly_grouped = monthly_grouped.sort_values("period")
@@ -55,13 +105,34 @@ def calculate_time_series_and_growth(
         previous = monthly_grouped.iloc[-2]
 
         if previous["revenue"] != 0:
-            revenue_growth = round(float((latest["revenue"] - previous["revenue"]) / abs(previous["revenue"]) * 100), 2)
-        
+            revenue_growth = round(
+                float(
+                    (latest["revenue"] - previous["revenue"])
+                    / abs(previous["revenue"])
+                    * 100
+                ),
+                2,
+            )
+
         if previous["orders"] != 0:
-            orders_growth = round(float((latest["orders"] - previous["orders"]) / previous["orders"] * 100), 2)
-            
+            orders_growth = round(
+                float(
+                    (latest["orders"] - previous["orders"])
+                    / previous["orders"]
+                    * 100
+                ),
+                2,
+            )
+
         if previous["units"] != 0:
-            units_growth = round(float((latest["units"] - previous["units"]) / abs(previous["units"]) * 100), 2)
+            units_growth = round(
+                float(
+                    (latest["units"] - previous["units"])
+                    / abs(previous["units"])
+                    * 100
+                ),
+                2,
+            )
 
     growth = GrowthMetrics(
         revenue=revenue_growth,

@@ -1,3 +1,4 @@
+import traceback
 from fastapi import APIRouter, Header, HTTPException, status
 from app.schemas.analytics import AnalyticsResponse
 from app.services.analytics.loader import (
@@ -83,8 +84,14 @@ async def get_dataset_analytics(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(e),
         )
+    
     except Exception as e:
+        print("\n========== ANALYTICS ERROR ==========")
+        print(f"{type(e).__name__}: {str(e)}")
+        traceback.print_exc()
+        print("=====================================\n")
+
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while processing dataset analytics.",
+            detail=f"Analytics processing error: {type(e).__name__}: {str(e)}",
         )
